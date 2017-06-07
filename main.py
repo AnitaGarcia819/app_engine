@@ -16,7 +16,15 @@
 #
 import webapp2
 import random
-#from count.py import count_function
+import jinja2
+import os
+
+JINJA_ENVIRONMENT = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
+    extensions=['jinja2.ext.autoescape'],
+    autoescape=True)
+# Jinja knows where your templates are located
+#https://cloud.google.com/appengine/docs/standard/python/getting-started/generating-dynamic-content-templates
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
@@ -28,9 +36,10 @@ class CountHandler(webapp2.RequestHandler):
 
 class FortuneHandler(webapp2.RequestHandler):
     def get(self):
+        fortune_page = JINJA_ENVIRONMENT.get_template("templates/fortune.html")
         fortunes = ['Something good will happen to you!','Something bad will happen to you :(','You will be happy for the rest of your life!', 'You will be sad for the rest of your life : ( ']
         random_number = random.randrange(len(fortunes))
-        self.response.write(fortunes[random_number])
+        self.response.write(fortune_page.render())
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
